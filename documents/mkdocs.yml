@@ -1,4 +1,4 @@
-site_name: GRC333 - Security in the cloud means more than you think
+site_name: WPS317-R - Automating compliance for public sector
 theme: readthedocs
 nav:
     - Scenario 1 - No Internet Gateways: 'scenario1.md'

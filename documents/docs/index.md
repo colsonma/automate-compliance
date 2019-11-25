@@ -1,4 +1,4 @@
-# Welcome to WPS317-R - Security in the cloud means more than you think
+# Welcome to WPS317-R - Automating compliance for public sector
 For public sector customers, ensuring compliance and security is vital. AWS provides these organizations with a broad set of cloud-based services to build world-class solutions. In this session, we go over native logging tools in AWS, such as AWS CloudTrail, Amazon CloudWatch Alarms, Amazon CloudWatch Logs, and Amazon GuardDuty. We also cover automated remediation of compliance events, alerting tools, and other methods of implementing compliance.
 
 # Summary of Session
