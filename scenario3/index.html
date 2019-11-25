@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  
+  <link rel="shortcut icon" href="../img/favicon.ico">
+  <title>Scenario 3 - GuardDuty - GRC333 - Security in the cloud means more than you think</title>
+  <link href='https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700' rel='stylesheet' type='text/css'>
+
+  <link rel="stylesheet" href="../css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../css/theme_extra.css" type="text/css" />
+  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css">
+  
+  <script>
+    // Current page data
+    var mkdocs_page_name = "Scenario 3 - GuardDuty";
+    var mkdocs_page_input_path = "scenario3.md";
+    var mkdocs_page_url = null;
+  </script>
+  
+  <script src="../js/jquery-2.1.1.min.js" defer></script>
+  <script src="../js/modernizr-2.8.3.min.js" defer></script>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+  <script>hljs.initHighlightingOnLoad();</script> 
+  
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+      <div class="wy-side-nav-search">
+        <a href=".." class="icon icon-home"> GRC333 - Security in the cloud means more than you think</a>
+        <div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+	<ul class="current">
+	  
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../scenario1/">Scenario 1 - No Internet Gateways</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../scenario2/">Scenario 2 - Drift Detection</a>
+	    </li>
+          
+            <li class="toctree-l1 current">
+		
+    <a class="current" href="./">Scenario 3 - GuardDuty</a>
+    <ul class="subnav">
+            
+    <li class="toctree-l2"><a href="#guardduty-continuous-monitoring-of-cloud-security">GuardDuty - Continuous Monitoring of Cloud Security</a></li>
+    
+        <ul>
+        
+            <li><a class="toctree-l3" href="#pre-requisites">Pre-requisites</a></li>
+        
+            <li><a class="toctree-l3" href="#activate-guardduty">Activate GuardDuty</a></li>
+        
+            <li><a class="toctree-l3" href="#set-up-sns-topic">Set up SNS Topic</a></li>
+        
+            <li><a class="toctree-l3" href="#configure-cloudwatch-events-rule">Configure CloudWatch Events rule</a></li>
+        
+            <li><a class="toctree-l3" href="#test-guardduty-with-sample-findings">Test GuardDuty with sample findings</a></li>
+        
+            <li><a class="toctree-l3" href="#cleanup">Cleanup</a></li>
+        
+        </ul>
+    
+
+    </ul>
+	    </li>
+          
+        </ul>
+      </div>
+      &nbsp;
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="..">GRC333 - Security in the cloud means more than you think</a>
+      </nav>
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="..">Docs</a> &raquo;</li>
+    
+      
+    
+    <li>Scenario 3 - GuardDuty</li>
+    <li class="wy-breadcrumbs-aside">
+      
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main">
+            <div class="section">
+              
+                <h1 id="guardduty-continuous-monitoring-of-cloud-security">GuardDuty - Continuous Monitoring of Cloud Security</h1>
+<p>Amazon GuardDuty is a threat detection service that continuously monitors for malicious activity and unauthorized behavior to protect your AWS accounts and workloads. With the cloud, the collection and aggregation of account and network activities is simplified, but it can be time consuming for security teams to continuously analyze event log data for potential threats. With GuardDuty, you now have an intelligent and cost-effective option for continuous threat detection in the AWS Cloud. The service uses machine learning, anomaly detection, and integrated threat intelligence to identify and prioritize potential threats. GuardDuty analyzes tens of billions of events across multiple AWS data sources, such as AWS CloudTrail, Amazon VPC Flow Logs, and DNS logs. With a few clicks in the AWS Management Console, GuardDuty can be enabled with no software or hardware to deploy or maintain. </p>
+<p>Many control families require automated mechanisms to assist in the tracking of security incidents and in the collection and analysis of incident information. See NIST IR-5(1), CIS 3.1. By integrating with AWS CloudWatch Events, GuardDuty alerts are actionable, easy to aggregate across multiple accounts, and straightforward to push into existing event management and workflow systems.</p>
+<h2 id="pre-requisites">Pre-requisites</h2>
+<p>You'll need:</p>
+<ul>
+<li>An AWS account that you can create CloudFormation stacks in<ul>
+<li>Make sure this account is one that creating/deleting resources like this won't trip any alarms!</li>
+</ul>
+</li>
+</ul>
+<p>Here's a high level graphic of what GuardDuty ingests to provide us with situational awareness. </p>
+<p><img alt="Screenshot" src="../images/scenario3.png" /></p>
+<p>In this lab, we'll be looking at sample findings and using CloudWatch to provide us with alerts of any security events. Similar to Scenario 1, you could use Lambda to react automatically to these events.</p>
+<p><strong>PLEASE BE SURE TO USE OREGON (US-WEST-2) FOR THIS LAB!</strong></p>
+<p>You can double check this by looking in the upper right hand corner for the region selection dropdown.</p>
+<h2 id="activate-guardduty">Activate GuardDuty</h2>
+<p>First, we need to turn on GuardDuty. By default it is turned off.</p>
+<p>In the AWS Console, search for GuardDuty, and click on it. </p>
+<p><img alt="Screenshot" src="../images/guardduty-getstarted.png" /></p>
+<p>When you first configure GuardDuty, you will be presented the option to Enable GuardDuty, and view the IAM role needed to operate it.</p>
+<p><img alt="Screenshot" src="../images/enable-guardduty.png" /></p>
+<p>You can view the IAM role needed for the service by clicking View service role permissions.</p>
+<p><img alt="Screenshot" src="../images/guardduty-service-role.png" /></p>
+<p>Once you're happy with the role, click Enable GuardDuty to get it started.</p>
+<p>Initially there will be no findings available. We will generate sample findings in order to see how the tool functions. Prior to that however, click settings in the left hand menu to see some configuration options for GuardDuty. From here you can configure CloudWatch events integration, generate sample findings, and see what the GuardDuty free trial will cost after the 30 day trial period.</p>
+<p><img alt="Screenshot" src="../images/guardduty-free-trial.png" /></p>
+<h2 id="set-up-sns-topic">Set up SNS Topic</h2>
+<p>We want to set up an SNS topic so that the GuardDuty findings that are sent to CloudWatch Events have a place to go. Amazon Simple Notification Service (SNS) is a highly available, durable, secure, fully managed pub/sub messaging service that enables you to decouple microservices, distributed systems, and serverless applications. Amazon SNS provides topics for high-throughput, push-based, many-to-many messaging. Using Amazon SNS topics, your publisher systems can fan out messages to a large number of subscriber endpoints for parallel processing, including Amazon SQS queues, AWS Lambda functions, and HTTP/S webhooks. Additionally, SNS can be used to fan out notifications to end users using mobile push, SMS, and email. </p>
+<p>Go to the console, and find SNS. Pick a topic name, and click Next step.</p>
+<p><img alt="Screenshot" src="../images/guardduty-sns-topic.png" /></p>
+<p>Flesh out the details of the topic, then continue.</p>
+<p><img alt="Screenshot" src="../images/guardduty-createtopic.png" /></p>
+<p>Once the topic is created, you'll want to create a subscription. Click the create subscription button, and pick a notification method. </p>
+<p><img alt="Screenshot" src="../images/guardduty-create-subscription.png" /></p>
+<p>In this example I've chosen to use email notification of my GuardDuty findings.</p>
+<p><img alt="Screenshot" src="../images/create-subscription-details.png" /></p>
+<h2 id="configure-cloudwatch-events-rule">Configure CloudWatch Events rule</h2>
+<p>Once an SNS topic is configured, we need to confiugre a CloudWatch Events rule to send findings to our new topic.</p>
+<p>Open CloudWatch in the console, and look for CloudWatch Events, and click Rules.</p>
+<p><img alt="Screenshot" src="../images/events.png" /></p>
+<p>Create a new rule to take in our GuardDuty events. Make sure event pattern is selected, and GuardDuty finding are selected.</p>
+<p><img alt="Screenshot" src="../images/guardduty-cwe-rule.png" /></p>
+<p>Select as a target our SNS topic we created earlier.</p>
+<p><img alt="Screenshot" src="../images/guardduty-cwe-target.png" /></p>
+<p>Finish up creation of the rule.</p>
+<p><img alt="Screenshot" src="../images/guardduty-cwe-rule-details.png" /></p>
+<h2 id="test-guardduty-with-sample-findings">Test GuardDuty with sample findings</h2>
+<p>Next, we will generate sample findings to see what kinds of alerts GuardDuty generates. </p>
+<p>Go back to GuardDuty in the AWS console, and select Settings, and look for Generate Sample Findings.</p>
+<p><img alt="Screenshot" src="../images/guardduty-generate-sample-findings.png" /></p>
+<p>Once you've clicked the button, head back to the main GuardDuty console to review the findings created. Note the differing severities, and types there.</p>
+<p><img alt="Screenshot" src="../images/guardduty-sample-findings.png" /></p>
+<p>Since we have generated Sample findings, we will not get email alerts on our CloudWatch rule. As an exercise, look at the sample findings and think about how you might remediate these, and ways you can prevent them from happening.</p>
+<h2 id="cleanup">Cleanup</h2>
+<p>To clean up this lab:</p>
+<ul>
+<li>Delete the CloudWatch Events rule we created</li>
+<li>Disable GuardDuty in GuardDuty/settings.</li>
+</ul>
+              
+            </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+      
+        <a href="../scenario2/" class="btn btn-neutral" title="Scenario 2 - Drift Detection"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+    
+  </div>
+
+  Built with <a href="http://www.mkdocs.org">MkDocs</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+      
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" style="cursor: pointer">
+    <span class="rst-current-version" data-toggle="rst-current-version">
+      
+      
+        <span><a href="../scenario2/" style="color: #fcfcfc;">&laquo; Previous</a></span>
+      
+      
+    </span>
+</div>
+    <script>var base_url = '..';</script>
+    <script src="../js/theme.js" defer></script>
+      <script src="../search/main.js" defer></script>
+
+</body>
+</html>

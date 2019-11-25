@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  
+  <link rel="shortcut icon" href="../img/favicon.ico">
+  <title>Scenario 2 - Drift Detection - GRC333 - Security in the cloud means more than you think</title>
+  <link href='https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700' rel='stylesheet' type='text/css'>
+
+  <link rel="stylesheet" href="../css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../css/theme_extra.css" type="text/css" />
+  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css">
+  
+  <script>
+    // Current page data
+    var mkdocs_page_name = "Scenario 2 - Drift Detection";
+    var mkdocs_page_input_path = "scenario2.md";
+    var mkdocs_page_url = null;
+  </script>
+  
+  <script src="../js/jquery-2.1.1.min.js" defer></script>
+  <script src="../js/modernizr-2.8.3.min.js" defer></script>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+  <script>hljs.initHighlightingOnLoad();</script> 
+  
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+      <div class="wy-side-nav-search">
+        <a href=".." class="icon icon-home"> GRC333 - Security in the cloud means more than you think</a>
+        <div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+	<ul class="current">
+	  
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../scenario1/">Scenario 1 - No Internet Gateways</a>
+	    </li>
+          
+            <li class="toctree-l1 current">
+		
+    <a class="current" href="./">Scenario 2 - Drift Detection</a>
+    <ul class="subnav">
+            
+    <li class="toctree-l2"><a href="#scenario-2-drift-detection">Scenario 2 - Drift Detection</a></li>
+    
+        <ul>
+        
+            <li><a class="toctree-l3" href="#pre-requisites">Pre-requisites</a></li>
+        
+            <li><a class="toctree-l3" href="#deploy-the-cloudformation-stack">Deploy the CloudFormation stack.</a></li>
+        
+            <li><a class="toctree-l3" href="#change-the-security-group">Change the Security Group</a></li>
+        
+            <li><a class="toctree-l3" href="#detect-drift">Detect Drift</a></li>
+        
+        </ul>
+    
+
+    <li class="toctree-l2"><a href="#summary">Summary</a></li>
+    
+
+    </ul>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../scenario3/">Scenario 3 - GuardDuty</a>
+	    </li>
+          
+        </ul>
+      </div>
+      &nbsp;
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="..">GRC333 - Security in the cloud means more than you think</a>
+      </nav>
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="..">Docs</a> &raquo;</li>
+    
+      
+    
+    <li>Scenario 2 - Drift Detection</li>
+    <li class="wy-breadcrumbs-aside">
+      
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main">
+            <div class="section">
+              
+                <h1 id="scenario-2-drift-detection">Scenario 2 - Drift Detection</h1>
+<p>As public sector customers continue to adopt cloud, the hard work they have done with building secure and compliant architectures must be continuously monitored. Many compliance frameworks mandate this, such as NIST 800-53. CM-7 (a/b) define the need to identify and block ports that are not relavent to the application. As the application operates, ongoing continous monitoring is vital. Organizations must define a plan to perform this monitoring and ongoing auditing. What if you could define these rules, and get an automated notification if the rules change? Instead of trying to track down a rogue user or mistaken administrator, you can quickly be notified of changes, and potentially revert them automatically.</p>
+<p>We've already used CloudFormation in Scenario 1 to deploy our resources, and will deploy our resources for this lab with it as well. One new feature of CloudFormation is Drift Detection. Drift is the difference between the expected configuration values of stack resources defined in CloudFormation templates and the actual configuration values of these resources in the corresponding CloudFormation stacks. This allows you to better manage your CloudFormation stacks and ensure consistency in your resource configurations. </p>
+<h2 id="pre-requisites">Pre-requisites</h2>
+<p>You'll need:</p>
+<ul>
+<li>An AWS account that you can create CloudFormation stacks in<ul>
+<li>Make sure this account is one that creating/deleting resources like this won't trip any alarms!</li>
+</ul>
+</li>
+</ul>
+<p>Here's a high level graphic of what we're attempting to do:</p>
+<p><img alt="Screenshot" src="../images/scenario2.png" /></p>
+<p>We have a security group that is gating access to our hosts. The rules are specific to ports 22 and 3389 for remote administration only. The security group is configured only to allow a specific IP address. We need to ensure that this security group is not modified except via valid configuration management process. If it is, we want to know about it so that we can be sure only hosts that we want to have access can hit our bastion host group.</p>
+<p><strong>PLEASE BE SURE TO USE OREGON (US-WEST-2) FOR THIS LAB!</strong></p>
+<p>You can double check this by looking in the upper right hand corner for the region selection dropdown.</p>
+<h2 id="deploy-the-cloudformation-stack">Deploy the CloudFormation stack.</h2>
+<p>First, let's deploy the stack that will provide the base for this lab. The CloudFormation stack will deploy a VPC with no resources or attachments in it. We need a VPC to associate a security group with. It will then deploy a security group that has two rules - one for RDP and one for SSH locked to a given IP.</p>
+<p>Launch the CloudFormation console, and create a new stack. </p>
+<p>Click Create Stack</p>
+<p><img alt="Screenshot" src="../images/create_stack.png" /> </p>
+<p>Specify Amazon S3 as the location for the CloudFormation template, then click next. (
+https://reinforce2019-grc333-session.s3-us-west-2.amazonaws.com/security-group.yaml)</p>
+<p><img alt="Screenshot" src="../images/create_Stack_security.png" /></p>
+<p>Provide a stack name, and edit the VPC name if you desire.</p>
+<p><img alt="Screenshot" src="../images/stack_details_sg.png" /></p>
+<p>Configure any stack options/tagging you wish to set. Click Next.</p>
+<p>Review the stack details, then click Next when you are satisfied.</p>
+<h2 id="change-the-security-group">Change the Security Group</h2>
+<p>In order to see how CloudFormation Drift Detection works, we need to introduce a change to our security group the CloudFormation stack has created. </p>
+<p>Open the EC2 console, and look for Security Groups on the left hand side under Network &amp; Security.</p>
+<p><img alt="Screenshot" src="../images/security_groups_menu.png" /></p>
+<p>Click Security Groups, and find the Security Group created by CloudFormation. It will be prefixed by the CloudFormation stack name, followed by a unique identifier.</p>
+<p><img alt="Screenshot" src="../images/security-groups.png" /></p>
+<p>Once you click the Security Group, a menu below will appear. Click the Inbound tab, and review the rules there.</p>
+<p><img alt="Screenshot" src="../images/sec_group_rules.png" /></p>
+<p>Notice the rules are set to only allow a single host. Click the Edit button so we can adjust the rule to deviate from the stack as it was deployed.</p>
+<p>Once you click edit, choose one of the rules, and change the Source to Anywhere. This will open this Security Group to allow ALL destinations on the port specified.</p>
+<p><img alt="Screenshot" src="../images/rule-edit.png" /></p>
+<p>Click Save. You should see the rule update in the Inbound tab. You may also see a "::/O" rule show up - this is an IPv6 rule that can be ignored.</p>
+<h2 id="detect-drift">Detect Drift</h2>
+<p>Now that a change has been made, let's see how CloudFormation can help us detect this.</p>
+<p>Launch the CloudFormation console, and find the stack we created for the Security Group. Click Stack Actions, and View Drift Results.</p>
+<p><img alt="Screenshot" src="../images/view-drift-results.png" /></p>
+<p>This will show the drift status for the stack. As you can see, we haven't run drift detection yet, so it will indicate <code>NOT_CHECKED</code>.</p>
+<p><img alt="Screenshot" src="../images/drift_status.png" /></p>
+<p>Click the button "Detect stack drift". This will start drift detection. Click the refresh button next to the "Detect stack drift" button. You will see the Resource drift status update, and the Security Group marked as <code>MODIFIED</code>. Select the radio button next to the Security Group, and click "View drift details".</p>
+<p><img alt="Screenshot" src="../images/resource_drift.png" /></p>
+<p>Notice the detected drift items. When changing the Source in the Security Group to All, the Security Group changed the CidrIp of the rule. This is indicated by the <code>REMOVE</code> of the expected IP address, and the <code>ADD</code> of the new ingress rule. </p>
+<p>You can also see the changes reflected in the JSON in the Details pane of the screen.</p>
+<p><img alt="Screenshot" src="../images/drift_details.png" /></p>
+<h1 id="summary">Summary</h1>
+<p>In this lab we created some resources using CloudFormation using an Infrastructure as Code pattern. We modified that stack by changing the IP in one of the rules. Once we ran CloudFormation Drift detection, we saw the changes highlighted as a variance from the stack that was originally deployed.</p>
+<p>These stack changes can be tracked and alerted on so that compliance and security teams can programatically detect and react to changes that are unauthorized or done without going through the proper change control process. </p>
+<p>To clean up from this lab, delete the CloudFormation stack we created earlier.</p>
+              
+            </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="../scenario3/" class="btn btn-neutral float-right" title="Scenario 3 - GuardDuty">Next <span class="icon icon-circle-arrow-right"></span></a>
+      
+      
+        <a href="../scenario1/" class="btn btn-neutral" title="Scenario 1 - No Internet Gateways"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+    
+  </div>
+
+  Built with <a href="http://www.mkdocs.org">MkDocs</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+      
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" style="cursor: pointer">
+    <span class="rst-current-version" data-toggle="rst-current-version">
+      
+      
+        <span><a href="../scenario1/" style="color: #fcfcfc;">&laquo; Previous</a></span>
+      
+      
+        <span style="margin-left: 15px"><a href="../scenario3/" style="color: #fcfcfc">Next &raquo;</a></span>
+      
+    </span>
+</div>
+    <script>var base_url = '..';</script>
+    <script src="../js/theme.js" defer></script>
+      <script src="../search/main.js" defer></script>
+
+</body>
+</html>
