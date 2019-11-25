@@ -1,0 +1,41 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: >-
+    Deploys a new VPC, and creates a security group for us to monitor. It puts two rules in it to simulate an Infrastructure as Code scenario
+    where ports and protocols are managed via templates such as this CloudFormation, instead of manually using the console.
+
+Parameters:
+    VPCName:
+        Description: The Name of our test VPC
+        Type: String
+        Default: ReinforceBuilderWorkshopVPC
+    VPCCIDR:
+        Description: The CIDR block for this test VPC, be sure you're not creating any issues in this account!
+        Type: String
+        Default: 10.10.0.0/16
+Resources:
+    VPC:
+        Type: AWS::EC2::VPC
+        Properties:
+            CidrBlock: !Ref VPCCIDR
+            EnableDnsSupport: true
+            EnableDnsHostnames: true
+            Tags:
+                - Key: Name
+                  Value: !Ref VPCName
+    SecurityGroup:
+        Type: "AWS::EC2::SecurityGroup"
+        Properties: 
+            GroupDescription: "Bastion host access rules"
+            SecurityGroupIngress:
+                -
+                    IpProtocol: "tcp"
+                    FromPort: "3389"
+                    ToPort: "3389"
+                    CidrIp: "123.45.67.89/32"
+                - 
+                    IpProtocol: "tcp"
+                    FromPort: "22"
+                    ToPort: "22"
+                    CidrIp: "123.45.67.89/32"
+                    
+            VpcId: !Ref VPC

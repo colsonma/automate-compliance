@@ -1,0 +1,6 @@
+site_name: GRC333 - Security in the cloud means more than you think
+theme: readthedocs
+nav:
+    - Scenario 1 - No Internet Gateways: 'scenario1.md'
+    - Scenario 2 - Drift Detection: 'scenario2.md'
+    - Scenario 3 - GuardDuty: 'scenario3.md'

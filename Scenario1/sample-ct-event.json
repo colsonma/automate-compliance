@@ -1,0 +1,50 @@
+{
+    "version": "0",
+    "id": "56591b3d-3cb1-6827-a2c5-1ded4df2eebb",
+    "detail-type": "AWS API Call via CloudTrail",
+    "source": "aws.ec2",
+    "account": "784053272245",
+    "time": "2019-05-30T00:11:03Z",
+    "region": "us-east-1",
+    "resources": [],
+    "detail": {
+      "eventVersion": "1.05",
+      "userIdentity": {
+        "type": "AssumedRole",
+        "principalId": "AROA3NDJXP22XYSPICMJU:nolenr-Isengard",
+        "arn": "arn:aws:sts::784053272245:assumed-role/Administrator/nolenr-Isengard",
+        "accountId": "784053272245",
+        "sessionContext": {
+          "attributes": {
+            "mfaAuthenticated": "false",
+            "creationDate": "2019-05-29T23:20:40Z"
+          },
+          "sessionIssuer": {
+            "type": "Role",
+            "principalId": "AROA3NDJXP22XYSPICMJU",
+            "arn": "arn:aws:iam::784053272245:role/Administrator",
+            "accountId": "784053272245",
+            "userName": "Administrator"
+          }
+        },
+        "invokedBy": "cloudformation.amazonaws.com"
+      },
+      "eventTime": "2019-05-30T00:11:03Z",
+      "eventSource": "ec2.amazonaws.com",
+      "eventName": "AttachInternetGateway",
+      "awsRegion": "us-east-1",
+      "sourceIPAddress": "cloudformation.amazonaws.com",
+      "userAgent": "cloudformation.amazonaws.com",
+      "requestParameters": {
+        "internetGatewayId": "igw-00dddb6477ba1d800",
+        "vpcId": "vpc-00f6974e117e4aab7"
+      },
+      "responseElements": {
+        "requestId": "63d6f2a8-e660-4bbe-8a05-3a135c6d2515",
+        "_return": "True"
+      },
+      "requestID": "63d6f2a8-e660-4bbe-8a05-3a135c6d2515",
+      "eventID": "5f4dcbc9-1d5f-4e8f-9317-2f597dcfffeb",
+      "eventType": "AwsApiCall"
+    }
+  }

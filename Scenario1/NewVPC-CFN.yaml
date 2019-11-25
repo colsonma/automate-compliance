@@ -1,0 +1,37 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: >-
+    Deploys a new VPC, an internet gateway, and an attachment. This is designed to simulate an event we would like to capture and react to.
+    We won't need to create a subnet, as we're trying to capture the attachment action.
+    Please validate that this action is permitted in the AWS account you are using, and won't trip any alarms for your organization.
+
+Parameters:
+    VPCName:
+        Description: The Name of our test VPC
+        Type: String
+        Default: ReinforceBuilderWorkshopVPC
+    VPCCIDR:
+        Description: The CIDR block for this test VPC, be sure you're not creating any issues in this account!
+        Type: String
+        Default: 10.10.0.0/16
+Resources:
+    VPC:
+        Type: AWS::EC2::VPC
+        Properties:
+            CidrBlock: !Ref VPCCIDR
+            EnableDnsSupport: true
+            EnableDnsHostnames: true
+            Tags:
+                - Key: Name
+                  Value: !Ref VPCName
+    InternetGateway:
+        Type: "AWS::EC2::InternetGateway"
+        Properties:
+            Tags:
+                - Key: Name
+                  Value: !Ref VPC
+    InternetGatewayAttach:
+        Type: "AWS::EC2::VPCGatewayAttachment"
+        Properties: 
+            InternetGatewayId: !Ref InternetGateway
+            VpcId: !Ref VPC
+    

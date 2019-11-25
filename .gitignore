@@ -1,0 +1,5 @@
+~$*.docx
+*.code-workspace
+~$*.pptx
+.DS_Store
+site/
